@@ -1,7 +1,5 @@
 AllCops:
   Exclude:
-    - bin/*
-    - tmp/**/*
     - vendor/**/*
 
 Style/StringLiterals:

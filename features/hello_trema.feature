@@ -1,3 +1,4 @@
+@sudo
 Feature: "Hello Trema!" example
   Background:
     Given I set the environment variables to:
@@ -10,36 +11,50 @@ Feature: "Hello Trema!" example
       vswitch { datapath_id 0xabc }
       """
 
-  @sudo
+  @open_flow10
   Scenario: Run
-    When I run `trema run ../../lib/hello_trema.rb -c trema.conf -- foo bar baz` interactively
-    And I run `sleep 3`
-    And I run `trema killall`
+    Given I use OpenFlow 1.0
+    When I trema run "lib/hello_trema.rb" interactively with the configuration "trema.conf"
+    And I trema killall "HelloTrema"
     Then the output should contain:
       """
-      Trema started (args = ["foo", "bar", "baz"]).
+      Trema started.
       Hello 0xabc!
       """
-    And a file named "HelloTrema.log" should exist
-    And the file "HelloTrema.log" should contain:
-      """
-      Trema started (args = ["foo", "bar", "baz"]).
-      """
-    And the file "HelloTrema.log" should contain:
-      """
-      Hello 0xabc!
-      """
+    And the log file "HelloTrema.log" should contain following messages:
+      | messages       |
+      | Trema started. |
+      | Hello 0xabc!   |
 
-  @sudo
+  @open_flow10
   Scenario: Run as a daemon
-    When I run `trema run ../../lib/hello_trema.rb -c trema.conf -d -- foo bar baz`
-    And I run `sleep 3`
-    Then a file named "HelloTrema.log" should exist
-    And the file "HelloTrema.log" should contain:
+    Given I use OpenFlow 1.0
+    When I trema run "lib/hello_trema.rb" with the configuration "trema.conf"
+    Then the log file "HelloTrema.log" should contain following messages:
+      | messages       |
+      | Trema started. |
+      | Hello 0xabc!   |
+
+  @open_flow13
+  Scenario: Run (OpenFlow 1.3)
+    Given I use OpenFlow 1.3
+    When I trema run "lib/hello_trema.rb" interactively with the configuration "trema.conf"
+    And I trema killall "HelloTrema"
+    Then the output should contain:
       """
-      Trema started (args = ["foo", "bar", "baz"]).
-      """
-    And the file "HelloTrema.log" should contain:
-      """
+      Trema started.
       Hello 0xabc!
       """
+    And the log file "HelloTrema.log" should contain following messages:
+      | messages       |
+      | Trema started. |
+      | Hello 0xabc!   |
+
+  @open_flow13
+  Scenario: Run as a daemon (OpenFlow 1.3)
+    Given I use OpenFlow 1.3
+    When I trema run "lib/hello_trema.rb" with the configuration "trema.conf"
+    Then the log file "HelloTrema.log" should contain following messages:
+      | messages       |
+      | Trema started. |
+      | Hello 0xabc!   |
